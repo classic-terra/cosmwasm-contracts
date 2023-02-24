@@ -1,19 +1,23 @@
+#[cfg(not(feature = "imported"))]
+use cosmwasm_std::entry_point;
+
 use cosmwasm_std::{
     Coin, Decimal, Deps, DepsMut, Env, MessageInfo, QueryResponse, Response, StdError, StdResult,
     Uint128,
 };
 
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
-use terra_cosmwasm::{SwapResponse, TerraQuerier};
+use terra_cosmwasm::{SwapResponse, TerraQuerier, TerraQueryWrapper};
 
 const DECIMAL_FRACTIONAL: u128 = 1_000_000_000u128;
 
 pub fn reverse_decimal(decimal: Decimal) -> Decimal {
-    Decimal::from_ratio(DECIMAL_FRACTIONAL, decimal * DECIMAL_FRACTIONAL.into())
+    Decimal::from_ratio(DECIMAL_FRACTIONAL, Uint128::from(DECIMAL_FRACTIONAL) * decimal)
 }
 
+#[cfg_attr(not(feature = "imported"), entry_point)]
 pub fn instantiate(
-    _deps: DepsMut,
+    _deps: DepsMut<TerraQueryWrapper>,
     _env: Env,
     _info: MessageInfo,
     _msg: InstantiateMsg,
@@ -21,8 +25,9 @@ pub fn instantiate(
     Ok(Response::default())
 }
 
+#[cfg_attr(not(feature = "imported"), entry_point)]
 pub fn execute(
-    deps: DepsMut,
+    deps: DepsMut<TerraQueryWrapper>,
     _env: Env,
     _info: MessageInfo,
     msg: ExecuteMsg,
@@ -37,7 +42,7 @@ pub fn execute(
 }
 
 pub fn assert_limit_order(
-    deps: DepsMut,
+    deps: DepsMut<TerraQueryWrapper>,
     offer_coin: Coin,
     ask_denom: String,
     minimum_receive: Uint128,
@@ -54,6 +59,7 @@ pub fn assert_limit_order(
     Ok(Response::default())
 }
 
-pub fn query(_deps: Deps, _env: Env, _msg: QueryMsg) -> StdResult<QueryResponse> {
+#[cfg_attr(not(feature = "imported"), entry_point)]
+pub fn query(_deps: Deps<TerraQueryWrapper>, _env: Env, _msg: QueryMsg) -> StdResult<QueryResponse> {
     Ok(QueryResponse::default())
 }

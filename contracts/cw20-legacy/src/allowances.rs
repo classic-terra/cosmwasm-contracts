@@ -296,7 +296,7 @@ mod tests {
     use super::*;
 
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
-    use cosmwasm_std::{coins, CosmosMsg, SubMsg, Timestamp, WasmMsg};
+    use cosmwasm_std::{CosmosMsg, SubMsg, Timestamp, WasmMsg};
     use cw20::{Cw20Coin, TokenInfoResponse};
 
     use crate::contract::{execute, instantiate, query_balance, query_token_info};
@@ -330,7 +330,7 @@ mod tests {
 
     #[test]
     fn increase_decrease_allowances() {
-        let mut deps = mock_dependencies(&coins(2, "token"));
+        let mut deps = mock_dependencies();
 
         let owner = String::from("addr0001");
         let spender = String::from("addr0002");
@@ -412,7 +412,7 @@ mod tests {
 
     #[test]
     fn allowances_independent() {
-        let mut deps = mock_dependencies(&coins(2, "token"));
+        let mut deps = mock_dependencies();
 
         let owner = String::from("addr0001");
         let spender = String::from("addr0002");
@@ -507,7 +507,7 @@ mod tests {
 
     #[test]
     fn no_self_allowance() {
-        let mut deps = mock_dependencies(&coins(2, "token"));
+        let mut deps = mock_dependencies();
 
         let owner = String::from("addr0001");
         let info = mock_info(owner.as_ref(), &[]);
@@ -535,7 +535,7 @@ mod tests {
 
     #[test]
     fn transfer_from_respects_limits() {
-        let mut deps = mock_dependencies(&[]);
+        let mut deps = mock_dependencies();
         let owner = String::from("addr0001");
         let spender = String::from("addr0002");
         let rcpt = String::from("addr0003");
@@ -616,7 +616,7 @@ mod tests {
 
     #[test]
     fn burn_from_respects_limits() {
-        let mut deps = mock_dependencies(&[]);
+        let mut deps = mock_dependencies();
         let owner = String::from("addr0001");
         let spender = String::from("addr0002");
 
@@ -692,7 +692,7 @@ mod tests {
 
     #[test]
     fn send_from_respects_limits() {
-        let mut deps = mock_dependencies(&[]);
+        let mut deps = mock_dependencies();
         let owner = String::from("addr0001");
         let spender = String::from("addr0002");
         let contract = String::from("cool-dex");

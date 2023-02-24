@@ -5,4 +5,3 @@ members = ["packages/*", "contracts/*"]
 rpath = false
 lto = true
 overflow-checks = true
-

@@ -34,11 +34,11 @@ overflow-checks = true
 backtraces = ["cosmwasm-std/backtraces"]
 
 [dependencies]
-terra-cosmwasm = "2.2.0"
-cosmwasm-std = "0.16.0"
-cosmwasm-storage = "0.16.0"
+terra-cosmwasm = { git = "https://github.com/classic-terra/terra-cosmwasm.git", branch = "v3.0.0-proposal", package = "terra-cosmwasm" }
+cosmwasm-std = "1.1.0"
+cosmwasm-storage = "1.1.0"
 schemars = "0.8.1"
 serde = { version = "1.0.103", default-features = false, features = ["derive"] }
 
 [dev-dependencies]
-cosmwasm-schema = "0.16.0"
+cosmwasm-schema = "1.1.0"

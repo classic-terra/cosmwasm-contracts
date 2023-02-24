@@ -1,4 +1,6 @@
 use std::cmp::min;
+#[cfg(not(feature = "imported"))]
+use cosmwasm_std::entry_point;
 
 use cosmwasm_std::{
     attr, to_binary, to_vec, Addr, BankMsg, Binary, Coin, ContractResult, CosmosMsg, Deps, DepsMut,
@@ -13,8 +15,9 @@ use crate::errors::{MakerError, Unauthorized};
 use crate::msg::{ConfigResponse, ExecuteMsg, InstantiateMsg, QueryMsg, SimulateResponse};
 use crate::state::{config, config_read, State};
 
+#[cfg_attr(not(feature = "imported"), entry_point)]
 pub fn instantiate(
-    deps: DepsMut,
+    deps: DepsMut<TerraQueryWrapper>,
     _env: Env,
     info: MessageInfo,
     msg: InstantiateMsg,
@@ -30,8 +33,9 @@ pub fn instantiate(
     Ok(Response::default())
 }
 
+#[cfg_attr(not(feature = "imported"), entry_point)]
 pub fn execute(
-    deps: DepsMut,
+    deps: DepsMut<TerraQueryWrapper>,
     env: Env,
     info: MessageInfo,
     msg: ExecuteMsg,
@@ -44,7 +48,7 @@ pub fn execute(
 }
 
 pub fn transfer(
-    deps: DepsMut,
+    deps: DepsMut<TerraQueryWrapper>,
     _env: Env,
     _info: MessageInfo,
     coin: Coin,
@@ -74,7 +78,7 @@ pub fn transfer(
 }
 
 pub fn buy(
-    deps: DepsMut,
+    deps: DepsMut<TerraQueryWrapper>,
     env: Env,
     info: MessageInfo,
     limit: Option<Uint128>,
@@ -106,7 +110,7 @@ pub fn buy(
 }
 
 pub fn sell(
-    deps: DepsMut,
+    deps: DepsMut<TerraQueryWrapper>,
     env: Env,
     info: MessageInfo,
     limit: Option<Uint128>,
@@ -137,7 +141,8 @@ pub fn sell(
     Ok(Response::new().add_message(msg))
 }
 
-pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<QueryResponse> {
+#[cfg_attr(not(feature = "imported"), entry_point)]
+pub fn query(deps: Deps<TerraQueryWrapper>, env: Env, msg: QueryMsg) -> StdResult<QueryResponse> {
     match msg {
         QueryMsg::Config {} => query_config(deps, env),
         QueryMsg::Simulate { offer } => query_swap(deps, env, offer),
@@ -145,7 +150,7 @@ pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<QueryResponse> {
     }
 }
 
-fn query_config(deps: Deps, _env: Env) -> StdResult<QueryResponse> {
+fn query_config(deps: Deps<TerraQueryWrapper>, _env: Env) -> StdResult<QueryResponse> {
     let state = config_read(deps.storage).load()?;
     let resp = ConfigResponse {
         ask: state.ask,
@@ -155,7 +160,7 @@ fn query_config(deps: Deps, _env: Env) -> StdResult<QueryResponse> {
     to_binary(&resp)
 }
 
-fn query_swap(deps: Deps, _env: Env, offer: Coin) -> StdResult<QueryResponse> {
+fn query_swap(deps: Deps<TerraQueryWrapper>, _env: Env, offer: Coin) -> StdResult<QueryResponse> {
     let state = config_read(deps.storage).load()?;
     let ask = if offer.denom == state.ask {
         state.offer
@@ -177,7 +182,7 @@ fn query_swap(deps: Deps, _env: Env, offer: Coin) -> StdResult<QueryResponse> {
     to_binary(&resp)
 }
 
-fn query_reflect(deps: Deps, _env: Env, query: TerraQueryWrapper) -> StdResult<Binary> {
+fn query_reflect(deps: Deps<TerraQueryWrapper>, _env: Env, query: TerraQueryWrapper) -> StdResult<Binary> {
     let request: QueryRequest<TerraQueryWrapper> = query.into();
     let raw_request = to_vec(&request)?;
     match deps.querier.raw_query(&raw_request) {
